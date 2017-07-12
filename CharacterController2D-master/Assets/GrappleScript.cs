@@ -18,6 +18,7 @@ public class GrappleScript : MonoBehaviour {
 	private Vector3 target;
 
 	private Vector3 startingPoint;
+	private GameObject Hook;
 
 	// Use this for initialization
 	void Start () {
@@ -33,13 +34,15 @@ public class GrappleScript : MonoBehaviour {
 		get{ return target; }
 		set {
 			target = value;
-		
+
 			StopCoroutine ("StartSendingGrapple");
 
 			StopCoroutine ("StartReturningGrapple");
-
-			StartCoroutine ("StartSendingGrapple");
-
+			if (startingPoint == Hook.transform.position) {
+				StartCoroutine ("StartReturningGrapple");
+			} else {
+				StartCoroutine ("StartSendingGrapple");
+			}
 		}
 	}
 	IEnumerator StartSendingGrapple(){
@@ -55,16 +58,22 @@ public class GrappleScript : MonoBehaviour {
 
 	}
 	IEnumerator StartReturningGrapple(){
-		while (this.transform.position != Character.transform.position) {
-			this.transform.position = new Vector3 (Mathf.Lerp (this.transform.position.x, Character.transform.position.x, t),
-				Mathf.Lerp (this.transform.position.y, Character.transform.position.y, t), 0);
+		Vector3 maximum = target;
+		Vector3 minimum = startingPoint;
+		t = 0;
+		while (this.transform.position != target) {
+			this.transform.position = new Vector3 (Mathf.Lerp (minimum.x, maximum.x, t),
+				Mathf.Lerp (minimum.y, maximum.y, t), 0);
 			t += grappleSpeed * Time.deltaTime;
+			if(Character.transform.position != target){
+				maximum = Character.transform.position;
+			}
 			yield return null;
 		}
 
 	}
 
-	public void SendGrapple () {
+	public bool SendGrapple () {
 		/*Vector3 temp = Grapple.transform.position;
 		temp.x += distanceMiss;
 		temp.y += distanceMiss;
@@ -72,16 +81,17 @@ public class GrappleScript : MonoBehaviour {
 		OriginPoint = Grapple.transform.position;
 		startingPoint = OriginPoint;
 		StartCoroutine ("StartSendingGrapple");
-	*/}
-	public void SendGrapple (GameObject passedTarget){
-		
+	*/
+		return false;}
+	public bool SendGrapple (GameObject passedTarget){
+		Hook = passedTarget;
 		startingPoint = this.transform.position;
-
 		Target = passedTarget.transform.position;
+		return true;
 	}
-	public void DetachGrapple (){
-
-		this.transform.SetParent (Character.transform, false);
-
+	public bool DetachGrapple (){
+		startingPoint = Hook.transform.position;
+		Target = Character.transform.position;
+		return false;
 	}
 }

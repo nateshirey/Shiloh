@@ -15,11 +15,9 @@ public class EnemySpawn : MonoBehaviour {
 
 	void onTriggerEnter(Collider2D col)	{
 
-		Debug.Log ("playe sdawsr");
 
 		if (col.tag == "Player"){
 
-			Debug.Log ("player");
 
 			for (int i = 0; i <= EnemyNumber; i++) {
 
@@ -33,7 +31,6 @@ public class EnemySpawn : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		Debug.Log ("plar");
 
 		
 	}

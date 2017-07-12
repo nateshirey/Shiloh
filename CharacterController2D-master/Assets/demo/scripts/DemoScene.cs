@@ -29,7 +29,7 @@ public class DemoScene : MonoBehaviour
 	{
 		_animator = GetComponent<Animator>();
 		_controller = GetComponent<CharacterController2D>();
-		_grapple = GetComponent<GrappleScript> ();
+		_grapple = Grapple.GetComponent<GrappleScript> ();
 		// listen to some events for illustration purposes
 		_controller.onControllerCollidedEvent += onControllerCollider;
 		_controller.onTriggerEnterEvent += onTriggerEnterEvent;
@@ -75,14 +75,20 @@ public class DemoScene : MonoBehaviour
 	// the Update loop contains a very simple example of moving the character around and controlling the animation
 	void Update()
 	{
-		if( _controller.isGrounded )
+		if (_controller.isGrounded)
+		{	
+			
 			_velocity.y = 0;
+			if (Attatched) {
+				Attatched = _grapple.DetachGrapple ();
+			}
+		}
 		
 		if (Input.GetMouseButtonDown (0)) {
 
 			if (Attatched) {
 
-				_grapple.DetachGrapple ();
+				Attatched = _grapple.DetachGrapple ();
 
 			}
 
@@ -91,15 +97,16 @@ public class DemoScene : MonoBehaviour
 				
 					Debug.Log ("In Range");
 
-					this.transform.SetParent (Grapple.transform, false);
+					//this.transform.SetParent (Grapple.transform, false);
 
-					_grapple.SendGrapple (GrappleTarget);
+					Attatched = _grapple.SendGrapple (GrappleTarget);
+					Debug.Log (Attatched);
 				
 				}
 				else{
 				
 					Debug.Log ("Out of Range");
-					_grapple.SendGrapple ();
+					Attatched = _grapple.SendGrapple ();
 				
 				}
 			}
